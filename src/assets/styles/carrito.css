@@ -1,0 +1,18 @@
+.text-coffee {
+  color: #3e2723;
+}
+
+.btn-coffee {
+  background-color: #3e2723;
+  color: #fff;
+}
+
+.btn-coffee:hover {
+  background-color: #5d4037;
+  color: #fff;
+}
+
+main {
+  margin-top: 100px;
+  margin-bottom: 100px;
+}

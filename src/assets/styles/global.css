@@ -1,5 +1,6 @@
-main{
+main {
   margin-top: 90px; /* ajusta según la altura del header */
   margin-bottom: 70px; /* espacio para el footer */
   flex: 1;
+  
 }

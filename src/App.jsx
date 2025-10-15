@@ -1,10 +1,13 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { BrowserRouter as Router, Routes, Route} from "react-router-dom";
 
 import Navbar from './components/Navbar.jsx'
 import Footer from './components/Footer.jsx'
 import Home from './pages/Home.jsx'
+import Productos from './pages/Productos.jsx'
+import ProductoDetalle from './pages/ProductoDetalle.jsx'
+import Carrito from './pages/Carrito.jsx'
+
 
 import "./assets/styles/global.css"
 
@@ -13,10 +16,19 @@ function App() {
 
   return (
     <>
+    <Router>
     <Navbar />
-    <Home />
+    <Routes>
+      {/* Rutas de la aplicación */}
+      {/*Home*/}
+      <Route path="/" element={<Home />} />
+      {/*Productos*/}
+      <Route path="/productos" element={<Productos />} />
+      <Route path="/producto/:id" element={<ProductoDetalle />} />
+      <Route path="/carrito" element={<Carrito />} />
+    </Routes>
     <Footer />
-
+    </Router>
     </>
   )
 }

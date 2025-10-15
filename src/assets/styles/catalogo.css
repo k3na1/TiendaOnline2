@@ -1,0 +1,21 @@
+main {
+  margin-top: 100px;
+  margin-bottom: 100px;
+}
+
+h1 {
+  color: #3e2723;
+  font-family: "Merriweather", Georgia, serif;
+  font-weight: 700;
+}
+
+/* Cards */
+.producto-card {
+  border-radius: 10px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.producto-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
