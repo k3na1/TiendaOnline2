@@ -1,0 +1,89 @@
+/* === Navbar lateral derecha === */
+.navbar-admin-right {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 220px;
+  height: 100vh;
+  background-color: #111;
+  color: white;
+  box-shadow: -3px 0 10px rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.navbar-admin-right.closed {
+  transform: translateX(100%);
+}
+
+.navbar-admin-right.open {
+  transform: translateX(0);
+}
+
+.navbar-admin-right h4 {
+  color: #fff;
+}
+
+.admin-link {
+  display: block;
+  color: #ccc;
+  padding: 10px 12px;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: 0.2s ease;
+}
+
+.admin-link:hover {
+  background-color: #222;
+  color: #fff;
+}
+
+.admin-link.active {
+  background-color: #2a2a2a;
+  color: #fff;
+}
+
+/* Contenido principal (ajustado cuando sidebar está abierta) */
+.admin-content {
+  margin-right: 220px;
+  padding: 2rem;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+  transition: margin-right 0.3s ease;
+}
+
+.navbar-admin-right.closed ~ .admin-content {
+  margin-right: 0;
+}
+
+/* === Botón hamburguesa === */
+.admin-toggle-btn {
+  position: fixed;
+  top: 15px;
+  right: 15px;
+  background: #111;
+  color: #fff;
+  border: none;
+  font-size: 1.5rem;
+  padding: 6px 10px;
+  border-radius: 5px;
+  z-index: 1100;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.admin-toggle-btn:hover {
+  background: #222;
+}
+
+/* Modo responsive */
+@media (max-width: 768px) {
+  .navbar-admin-right {
+    width: 200px;
+  }
+  .admin-toggle-btn {
+    top: 10px;
+    right: 10px;
+  }
+}
