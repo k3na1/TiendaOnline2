@@ -1,0 +1,118 @@
+/* === Header general === */
+header {
+    background-color: #3e2723; /* café oscuro */
+    color: #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+}
+
+/* === Navbar === */
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 2rem;
+}
+
+.navbar-title {
+    font-size: 1.6rem;
+    font-weight: bold;
+    color: #f0a500; /* dorado cálido */
+    font-family: "Merriweather", Georgia, serif;
+}
+
+.navbar-links {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.navbar-links a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: background 0.2s, color 0.2s;
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+}
+
+.navbar-links a:hover {
+    background: #f0a500;
+    color: #3e2723;
+}
+
+/* === Botones de login/registro === */
+.navbar-auth {
+    display: flex;
+    gap: 1rem;
+}
+
+.navbar-auth a {
+    color: #3e2723;
+    background: #f0a500;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background 0.2s, transform 0.1s;
+}
+
+.navbar-auth a:hover {
+    background: #cf8500;
+    transform: translateY(-2px);
+}
+
+/* === Responsivo (tablets) === */
+@media (max-width: 900px) {
+    .navbar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.7rem;
+        padding: 1.2rem 1rem;
+    }
+    .navbar-links,
+    .navbar-auth {
+        justify-content: center;
+        flex-wrap: wrap;
+        width: 100%;
+    }
+}
+
+/* === Responsivo (móviles) === */
+@media (max-width: 600px) {
+    .navbar {
+        padding: 0.7rem 0.8rem;
+        gap: 0.5rem;
+    }
+    .navbar-title {
+        font-size: 1.2rem;
+        text-align: center;
+        width: 100%;
+    }
+    .navbar-links {
+        flex-direction: column;
+        align-items: center;
+        gap: 0.7rem;
+        background: #2c1d19;
+        border-radius: 6px;
+        padding: 0.5rem 0;
+    }
+    .navbar-links a {
+        width: 90%;
+        text-align: center;
+    }
+    .navbar-auth {
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        gap: 0.6rem;
+    }
+    .navbar-auth a {
+        width: 90%;
+        text-align: center;
+    }
+}

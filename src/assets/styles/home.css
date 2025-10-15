@@ -1,0 +1,57 @@
+body, #root {
+  background-color: #faf6ef;
+  color: #3e2723;
+  font-family: "Merriweather", Georgia, serif;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+h1.titulo-bienvenida {
+  margin-top: 1rem;
+  font-weight: 700;
+  color: #3e2723;
+}
+
+p.subtitulo-bienvenida {
+  color: #5a4634;
+  font-size: 1.1rem;
+}
+
+.carousel-wrapper {
+  width: 100%;
+  max-width: 900px;
+  height: 450px;
+  margin: 0 auto;
+  overflow: hidden;
+  position: relative;
+}
+
+.carousel-inner {
+    border-radius: 10px;
+    overflow: hidden;
+    height: 450px;
+}
+
+.carousel-inner img {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+
+
+/* Ajuste de productos */
+.card {
+  border-radius: 10px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+}
+
+main {
+    margin-top: 100px;
+}
