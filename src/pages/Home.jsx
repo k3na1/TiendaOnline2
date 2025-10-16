@@ -26,6 +26,7 @@ export default function Home() {
   ];
 
   return (
+    <div className="home-page">
     <main className="container my-5 text-center">
       {/* Carrusel */}
       <div className="carousel-wrapper mb-5">
@@ -106,5 +107,6 @@ export default function Home() {
         </div>
       </section>
     </main>
+    </div>
   );
 }

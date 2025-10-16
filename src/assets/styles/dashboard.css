@@ -1,0 +1,187 @@
+.admin-dashboard {
+  background-color: #0f0f0f;
+  color: white;
+  min-height: 100vh;
+  padding: 2rem;
+}
+
+/* KPIs */
+.kpis {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.kpi {
+  background-color: #141414;
+  padding: 1rem 1.5rem;
+  border-radius: 10px;
+  flex: 1 1 200px;
+  text-align: center;
+  border: 1px solid #2c2c2c;
+  transition: transform 0.2s ease;
+}
+
+.kpi:hover {
+  transform: scale(1.02);
+}
+
+.kpi span {
+  display: block;
+  color: #a9a9a9;
+}
+
+.kpi strong {
+  font-size: 1.5rem;
+  color: #fff;
+}
+
+/* Panel */
+.panel {
+  background-color: #111;
+  border-radius: 10px;
+  padding: 1.5rem;
+  border: 1px solid #2c2c2c;
+}
+
+.panel-title {
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.panel input[type="search"] {
+  background-color: #1a1a1a;
+  color: white;
+  border: 1px solid #333;
+}
+
+.panel input[type="search"]:focus {
+  border-color: #555;
+  outline: none;
+}
+
+.panel .btn-primary {
+  background-color: #6a4fff;
+  border: none;
+  color: white;
+}
+
+.panel .btn-primary:hover {
+  background-color: #7d66ff;
+}
+
+/* Tabla */
+.table-dark {
+  background-color: #1a1a1a;
+}
+
+.table-dark th {
+  color: #aaa;
+}
+
+.table-dark td {
+  color: #fff;
+}
+
+.table-dark tr:hover {
+  background-color: #222;
+}
+
+/*Usuarios*/
+.admin-usuarios {
+  color: #fff;
+}
+
+.summary {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.pill {
+  background: #1c1c1c;
+  border-radius: 20px;
+  padding: 0.4rem 1rem;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.actions input,
+.actions select {
+  background: #1c1c1c;
+  color: #fff;
+  border: 1px solid #333;
+  border-radius: 6px;
+  padding: 0.5rem;
+}
+
+.btn-primary {
+  background: #6c4cff;
+  border: none;
+  color: #fff;
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btn-danger {
+  background: #ff4444;
+  border: none;
+  color: #fff;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  margin-left: 0.3rem;
+}
+
+.panel {
+  background: #111;
+  border-radius: 10px;
+  padding: 1rem;
+}
+
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tabla th, .tabla td {
+  padding: 0.6rem;
+  border-bottom: 1px solid #333;
+}
+
+.modal {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000;
+}
+
+.form {
+  background: #1b1b1b;
+  padding: 2rem;
+  border-radius: 10px;
+  width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.form input, .form select {
+  background: #111;
+  border: 1px solid #333;
+  color: white;
+  padding: 0.5rem;
+  border-radius: 6px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}

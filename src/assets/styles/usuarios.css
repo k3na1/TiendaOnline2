@@ -1,0 +1,97 @@
+.admin-usuarios {
+  color: #fff;
+}
+
+.summary {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.pill {
+  background: #1c1c1c;
+  border-radius: 20px;
+  padding: 0.4rem 1rem;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.actions input,
+.actions select {
+  background: #1c1c1c;
+  color: #fff;
+  border: 1px solid #333;
+  border-radius: 6px;
+  padding: 0.5rem;
+}
+
+.btn-primary {
+  background: #6c4cff;
+  border: none;
+  color: #fff;
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btn-danger {
+  background: #ff4444;
+  border: none;
+  color: #fff;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  margin-left: 0.3rem;
+}
+
+.panel {
+  background: #111;
+  border-radius: 10px;
+  padding: 1rem;
+}
+
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tabla th, .tabla td {
+  padding: 0.6rem;
+  border-bottom: 1px solid #333;
+}
+
+.modal {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000;
+}
+
+.form {
+  background: #1b1b1b;
+  padding: 2rem;
+  border-radius: 10px;
+  width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.form input, .form select {
+  background: #111;
+  border: 1px solid #333;
+  color: white;
+  padding: 0.5rem;
+  border-radius: 6px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}

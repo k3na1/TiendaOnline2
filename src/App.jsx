@@ -13,7 +13,8 @@ import Registro from './pages/Registro.jsx'
 import Login from './pages/Login.jsx'
 
 /*Imports de admin */
-
+import AdminDashboard from './pages/admin/AdminDashboard.jsx'
+import AdminUsuarios from './pages/admin/AdminUsuarios.jsx'
 
 import "./assets/styles/global.css"
 
@@ -35,6 +36,8 @@ function App() {
       <Route path="/registro" element={<TiendaLayout><Registro /></TiendaLayout>} />
       <Route path="/login" element={<TiendaLayout><Login /></TiendaLayout>} />
       {/*Rutas de admin*/}
+      <Route path="/admin" element={<AdminLayout><AdminDashboard /></AdminLayout>} />
+      <Route path="/admin/usuarios" element={<AdminLayout><AdminUsuarios /></AdminLayout>} />
     </Routes>
     </Router>
     </>
