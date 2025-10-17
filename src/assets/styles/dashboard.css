@@ -124,7 +124,7 @@
   background: #6c4cff;
   border: none;
   color: #fff;
-  padding: 0.6rem 1rem;
+  padding: 0.4rem 0.8rem;
   border-radius: 6px;
   cursor: pointer;
 }
@@ -162,7 +162,7 @@
   z-index: 1000;
 }
 
-.form {
+.forms {
   background: #1b1b1b;
   padding: 2rem;
   border-radius: 10px;
@@ -172,7 +172,7 @@
   gap: 0.8rem;
 }
 
-.form input, .form select {
+.forms input, .forms select {
   background: #111;
   border: 1px solid #333;
   color: white;
@@ -184,4 +184,62 @@
   display: flex;
   justify-content: flex-end;
   gap: 0.5rem;
+}
+
+.forms label {
+  color: white;
+}
+
+.areaTexto {
+  resize: none;
+}
+
+/* Para que las imágenes en la tabla no se deformen */
+.tabla img {
+  object-fit: cover;
+  border: 1px solid #333;
+}
+
+.titulo {
+  color: white;
+}
+
+.forms-producto {
+  background: #1b1b1b;
+  padding: 2rem 3rem;
+  border-radius: 10px;
+  width: 500px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.forms-producto input, .forms-producto select {
+  background: #111;
+  border: 1px solid #333;
+  color: white;
+  padding: 0.5rem;
+  border-radius: 6px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.forms-producto label {
+  color: white;
+}
+
+.form-controlado{
+  background-color: #111;
+  border-color: #333;
+}
+
+.form-controlado:focus{
+  background-color: #111;
+  border-color: #ffffff;
+  outline: none;
+  color: white;
 }

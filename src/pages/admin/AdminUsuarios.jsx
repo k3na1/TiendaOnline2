@@ -148,7 +148,7 @@ export default function AdminUsuarios() {
       {/* Modal */}
       {modalAbierto && (
         <div className="modal">
-          <form className="form" onSubmit={guardarUsuario}>
+          <form className="forms" onSubmit={guardarUsuario}>
             <h3>{modoEdicion ? "Editar usuario" : "Nuevo usuario"}</h3>
 
             <label>RUN

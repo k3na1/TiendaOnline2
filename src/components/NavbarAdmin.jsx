@@ -10,6 +10,16 @@ export default function NavbarAdmin() {
     navigate("/login");
   };
 
+  // 🔹 Lista de secciones del panel
+  const secciones = [
+    { nombre: "Dashboard", ruta: "/admin" },
+    { nombre: "Usuarios", ruta: "/admin/usuarios" },
+    { nombre: "Productos", ruta: "/admin/productos" },
+    // 👇 si luego agregas más, simplemente añade aquí:
+    // { nombre: "Pedidos", ruta: "/admin/pedidos" },
+    // { nombre: "Reportes", ruta: "/admin/reportes" },
+  ];
+
   const esRutaActiva = (ruta) => location.pathname === ruta;
 
   return (
@@ -17,24 +27,15 @@ export default function NavbarAdmin() {
       <h4 className="fw-bold mb-4 text-light">CoffeeStore</h4>
 
       <nav className="d-flex flex-column w-100 gap-2">
-        <a
-          href="/admin"
-          className={`admin-link ${esRutaActiva("/admin") ? "active" : ""}`}
-        >
-          Dashboard
-        </a>
-        <a
-          href="/admin/usuarios"
-          className={`admin-link ${esRutaActiva("/admin/usuarios") ? "active" : ""}`}
-        >
-          Usuarios
-        </a>
-        <a
-          href="/admin/productos"
-          className={`admin-link ${esRutaActiva("/admin/productos") ? "active" : ""}`}
-        >
-          Productos
-        </a>
+        {secciones.map((sec) => (
+          <a
+            key={sec.ruta}
+            href={sec.ruta}
+            className={`admin-link ${esRutaActiva(sec.ruta) ? "active" : ""}`}
+          >
+            {sec.nombre}
+          </a>
+        ))}
       </nav>
 
       <hr className="border-secondary w-100 my-4" />

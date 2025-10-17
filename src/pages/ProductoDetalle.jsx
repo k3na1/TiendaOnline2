@@ -1,58 +1,58 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "../assets/styles/catalogo.css";
 
 export default function ProductoDetalle() {
   const { id } = useParams();
   const navigate = useNavigate();
-
-  const productos = [
-    {
-      id: "SKU001",
-      nombre: "Café de Grano Clásico",
-      descripcion:
-        "Un café equilibrado y suave, perfecto para empezar el día. Notas de chocolate y nuez.",
-      precio: 12000,
-      stock: 50,
-      imagen:
-        "https://static.wixstatic.com/media/48f789_53c573c80f8c416586d3ee6aa1a75f69~mv2.jpg/v1/fill/w_980,h_653,al_c,q_85,usm_0.66_1.00_0.01,enc_auto/48f789_53c573c80f8c416586d3ee6aa1a75f69~mv2.jpg",
-    },
-    {
-      id: "SKU002",
-      nombre: "Café de Origen Único Etiopía",
-      descripcion:
-        "Café de especialidad con notas florales y cítricas. Acidez brillante y cuerpo ligero.",
-      precio: 18000,
-      stock: 30,
-      imagen:
-        "https://cdn.shopify.com/s/files/1/0301/0190/4313/products/ethiopia_1024x1024.jpg?v=1596570843",
-    },
-  ];
-
-  const producto = productos.find((p) => p.id === id);
+  const [producto, setProducto] = useState(null);
   const [cantidad, setCantidad] = useState(1);
+  const [errorStock, setErrorStock] = useState("");
 
-  if (!producto)
+  useEffect(() => {
+    const data = JSON.parse(localStorage.getItem("productos")) || [];
+    const encontrado = data.find((p) => p.id === id);
+    setProducto(encontrado || null);
+  }, [id]);
+
+  if (!producto) {
     return (
       <main className="container text-center my-5">
         <h2>Producto no encontrado</h2>
         <p>Por favor, vuelve al catálogo.</p>
+        <button
+          className="btn btn-warning fw-bold text-dark mt-3"
+          onClick={() => navigate("/productos")}
+        >
+          Volver al catálogo
+        </button>
       </main>
     );
+  }
 
   const handleAgregarCarrito = () => {
     const cantidadNum = parseInt(cantidad);
-    if (cantidadNum <= 0 || cantidadNum > producto.stock) {
-      alert("Cantidad inválida o fuera de stock.");
+    if (cantidadNum <= 0) {
+      setErrorStock("Debe ingresar una cantidad válida.");
+      return;
+    }
+    if (cantidadNum > producto.stock) {
+      setErrorStock("No hay suficiente stock disponible.");
       return;
     }
 
+    // Leer carrito actual
     const carritoGuardado = localStorage.getItem("carrito");
     const carrito = carritoGuardado ? JSON.parse(carritoGuardado) : [];
 
     const existente = carrito.find((item) => item.id === producto.id);
 
     if (existente) {
+      // Verificar que no sobrepase stock total al sumar
+      if (existente.cantidad + cantidadNum > producto.stock) {
+        setErrorStock("No hay suficiente stock para agregar esa cantidad.");
+        return;
+      }
       existente.cantidad += cantidadNum;
     } else {
       carrito.push({
@@ -65,11 +65,29 @@ export default function ProductoDetalle() {
       });
     }
 
+    // Guardar carrito actualizado
     localStorage.setItem("carrito", JSON.stringify(carrito));
 
-    alert(`Agregaste ${cantidadNum} unidad(es) de "${producto.nombre}" al carrito 🛒`);
+    // Reducir stock en la “base de datos” productos
+    const productosBase = JSON.parse(localStorage.getItem("productos")) || [];
+    const idx = productosBase.findIndex((p) => p.id === producto.id);
+    if (idx >= 0) {
+      productosBase[idx].stock = productosBase[idx].stock - cantidadNum;
+      localStorage.setItem("productos", JSON.stringify(productosBase));
+    }
 
+    alert(`Agregaste ${cantidadNum} unidad(es) de "${producto.nombre}" al carrito 🛒`);
     navigate("/carrito");
+  };
+
+  const handleCantidadChange = (e) => {
+    const val = parseInt(e.target.value);
+    if (isNaN(val)) {
+      setCantidad("");
+    } else {
+      setCantidad(val);
+    }
+    setErrorStock("");
   };
 
   return (
@@ -82,10 +100,14 @@ export default function ProductoDetalle() {
             className="img-fluid rounded shadow-sm"
           />
         </div>
+
         <div className="col-12 col-md-6">
           <h2 className="fw-bold mb-3">{producto.nombre}</h2>
           <p className="text-muted fs-5 mb-1">
             ${producto.precio.toLocaleString("es-CL")}
+          </p>
+          <p className="mb-2">
+            <strong>Stock disponible: </strong> {producto.stock}
           </p>
           <p className="mb-4">{producto.descripcion}</p>
 
@@ -100,15 +122,20 @@ export default function ProductoDetalle() {
               min="1"
               max={producto.stock}
               value={cantidad}
-              onChange={(e) => setCantidad(e.target.value)}
+              onChange={handleCantidadChange}
             />
           </div>
+
+          {errorStock && (
+            <div className="text-danger mb-3">{errorStock}</div>
+          )}
 
           <button
             className="btn btn-warning fw-bold text-dark"
             onClick={handleAgregarCarrito}
+            disabled={producto.stock === 0}
           >
-            Añadir al Carrito
+            {producto.stock === 0 ? "Agotado" : "Añadir al Carrito"}
           </button>
         </div>
       </div>

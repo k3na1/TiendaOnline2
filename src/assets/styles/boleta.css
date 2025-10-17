@@ -1,0 +1,13 @@
+table {
+  background-color: white;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.table-dark th {
+  background-color: #3e2723 !important;
+}
+
+h2, h4, h5 {
+  color: #3e2723;
+}

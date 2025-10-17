@@ -11,10 +11,13 @@ import ProductoDetalle from './pages/ProductoDetalle.jsx'
 import Carrito from './pages/Carrito.jsx'
 import Registro from './pages/Registro.jsx'
 import Login from './pages/Login.jsx'
+import Pago from './pages/Pago.jsx'
+import Boleta from './pages/Boleta.jsx'
 
 /*Imports de admin */
 import AdminDashboard from './pages/admin/AdminDashboard.jsx'
 import AdminUsuarios from './pages/admin/AdminUsuarios.jsx'
+import AdminProductos from './pages/admin/AdminProductos.jsx'
 
 import "./assets/styles/global.css"
 
@@ -32,12 +35,15 @@ function App() {
       <Route path="/productos" element={<TiendaLayout><Productos /></TiendaLayout>} />
       <Route path="/producto/:id" element={<TiendaLayout><ProductoDetalle /></TiendaLayout>} />
       <Route path="/carrito" element={<TiendaLayout><Carrito /></TiendaLayout>} />
+      <Route path="/pago" element={<TiendaLayout><Pago /></TiendaLayout>} />
+      <Route path="/boleta" element={<TiendaLayout><Boleta /></TiendaLayout>} />
       {/*Registro y Login*/}
       <Route path="/registro" element={<TiendaLayout><Registro /></TiendaLayout>} />
       <Route path="/login" element={<TiendaLayout><Login /></TiendaLayout>} />
       {/*Rutas de admin*/}
       <Route path="/admin" element={<AdminLayout><AdminDashboard /></AdminLayout>} />
       <Route path="/admin/usuarios" element={<AdminLayout><AdminUsuarios /></AdminLayout>} />
+      <Route path="/admin/productos" element={<AdminLayout><AdminProductos /></AdminLayout>} />
     </Routes>
     </Router>
     </>

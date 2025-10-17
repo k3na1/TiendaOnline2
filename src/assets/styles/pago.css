@@ -1,0 +1,15 @@
+.form-pago label {
+  font-weight: 600;
+}
+.form-pago input,
+.form-pago textarea {
+  border-radius: 8px;
+}
+.tabla-pago {
+  background-color: white;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.tabla-pagodark th {
+  background-color: #3e2723 !important;
+}
