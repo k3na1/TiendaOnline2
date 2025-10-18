@@ -33,7 +33,7 @@ function App() {
       {/*Home*/}
       <Route path="/" element={<TiendaLayout><Home /></TiendaLayout>} />
       {/*Productos*/}
-      <Route path="/productos" element={<TiendaLayout><Productos /></TiendaLayout>} />
+      <Route path="productos" element={<TiendaLayout><Productos /></TiendaLayout>} />
       <Route path="/producto/:id" element={<TiendaLayout><ProductoDetalle /></TiendaLayout>} />
       <Route path="/carrito" element={<TiendaLayout><Carrito /></TiendaLayout>} />
       <Route path="/pago" element={<TiendaLayout><Pago /></TiendaLayout>} />
