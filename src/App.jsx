@@ -13,6 +13,10 @@ import Registro from './pages/Registro.jsx'
 import Login from './pages/Login.jsx'
 import Pago from './pages/Pago.jsx'
 import Boleta from './pages/Boleta.jsx'
+import Blogs from './pages/Blogs.jsx'
+import BlogDetalle from './pages/BlogDetalle.jsx'
+import Contacto from './pages/Contacto.jsx'
+import Nosotros from './pages/Nosotros.jsx';
 
 /*Imports de admin */
 import AdminDashboard from './pages/admin/AdminDashboard.jsx'
@@ -38,6 +42,12 @@ function App() {
       <Route path="/carrito" element={<TiendaLayout><Carrito /></TiendaLayout>} />
       <Route path="/pago" element={<TiendaLayout><Pago /></TiendaLayout>} />
       <Route path="/boleta" element={<TiendaLayout><Boleta /></TiendaLayout>} />
+      {/*Blog*/}
+      <Route path="/blogs" element={<TiendaLayout><Blogs /></TiendaLayout>} />
+      <Route path="/blog/:id" element={<TiendaLayout><BlogDetalle /></TiendaLayout>} />
+      {/*Contacto*/}
+      <Route path="/contacto" element={<TiendaLayout><Contacto /></TiendaLayout>} />
+      <Route path="/nosotros" element={<TiendaLayout><Nosotros /></TiendaLayout>} />
       {/*Registro y Login*/}
       <Route path="/registro" element={<TiendaLayout><Registro /></TiendaLayout>} />
       <Route path="/login" element={<TiendaLayout><Login /></TiendaLayout>} />
