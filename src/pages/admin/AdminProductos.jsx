@@ -3,6 +3,7 @@ import "../../assets/styles/dashboard.css";
 
 export default function AdminProductos() {
   const [productos, setProductos] = useState([]);
+  const [categorias, setCategorias] = useState([]);
   const [busqueda, setBusqueda] = useState("");
   const [modalAbierto, setModalAbierto] = useState(false);
   const [modoEdicion, setModoEdicion] = useState(false);
@@ -13,11 +14,14 @@ export default function AdminProductos() {
     precio: "",
     stock: "",
     imagen: "",
+    categoria: "",
   });
 
   useEffect(() => {
-    const data = JSON.parse(localStorage.getItem("productos")) || [];
-    setProductos(data);
+    const dataProductos = JSON.parse(localStorage.getItem("productos")) || [];
+    const dataCategorias = JSON.parse(localStorage.getItem("categorias")) || [];
+    setProductos(dataProductos);
+    setCategorias(dataCategorias);
   }, []);
 
   const guardarProductos = (arr) => {
@@ -34,6 +38,7 @@ export default function AdminProductos() {
       precio: "",
       stock: "",
       imagen: "",
+      categoria: "",
     });
     setModalAbierto(true);
   };
@@ -76,7 +81,7 @@ export default function AdminProductos() {
     <div className="admin-dashboard">
       <h1 className="titulo">Productos</h1>
 
-      {/* Acciones */}
+      {/* 🔍 Acciones */}
       <section className="actions">
         <button className="btn-primary" onClick={abrirModalNuevo}>
           + Nuevo producto
@@ -89,7 +94,7 @@ export default function AdminProductos() {
         />
       </section>
 
-      {/* Tabla */}
+      {/* 📋 Tabla */}
       <section className="panel">
         <h2 className="panel-title">Listado</h2>
         <table className="tabla">
@@ -97,6 +102,7 @@ export default function AdminProductos() {
             <tr>
               <th>ID</th>
               <th>Nombre</th>
+              <th>Categoría</th>
               <th>Precio</th>
               <th>Stock</th>
               <th>Imagen</th>
@@ -106,13 +112,14 @@ export default function AdminProductos() {
           <tbody>
             {filtrados.length === 0 ? (
               <tr>
-                <td colSpan="6">Sin resultados</td>
+                <td colSpan="7">Sin resultados</td>
               </tr>
             ) : (
               filtrados.map((p) => (
                 <tr key={p.id}>
                   <td>{p.id}</td>
                   <td>{p.nombre}</td>
+                  <td>{p.categoria || "—"}</td>
                   <td>${p.precio}</td>
                   <td>{p.stock}</td>
                   <td>
@@ -127,11 +134,10 @@ export default function AdminProductos() {
                     )}
                   </td>
                   <td>
-                    <button className="btn-primary" onClick={() => abrirModalEditar(p)}>Editar</button>
-                    <button
-                      className="btn-danger"
-                      onClick={() => eliminarProducto(p.id)}
-                    >
+                    <button className="btn-primary" onClick={() => abrirModalEditar(p)}>
+                      Editar
+                    </button>
+                    <button className="btn-danger" onClick={() => eliminarProducto(p.id)}>
                       Eliminar
                     </button>
                   </td>
@@ -142,7 +148,7 @@ export default function AdminProductos() {
         </table>
       </section>
 
-      {/* Modal */}
+      {/* 🟡 Modal */}
       {modalAbierto && (
         <div className="modal">
           <form className="forms-producto" onSubmit={guardarProducto}>
@@ -172,7 +178,7 @@ export default function AdminProductos() {
             </label>
 
             <label>Descripción
-              <textarea className="form-controlado form-control"
+              <textarea
                 value={productoActual.descripcion}
                 onChange={(e) =>
                   setProductoActual({
@@ -183,6 +189,31 @@ export default function AdminProductos() {
                 placeholder="Descripción breve…"
                 rows={3}
               />
+            </label>
+
+            <label>Categoría
+              <select
+                className="form-control"
+                value={productoActual.categoria}
+                onChange={(e) =>
+                  setProductoActual({
+                    ...productoActual,
+                    categoria: e.target.value,
+                  })
+                }
+                required
+              >
+                <option value="">Seleccionar categoría...</option>
+                {categorias.length > 0 ? (
+                  categorias.map((cat) => (
+                    <option key={cat.id} value={cat.nombre}>
+                      {cat.nombre}
+                    </option>
+                  ))
+                ) : (
+                  <option disabled>No hay categorías registradas</option>
+                )}
+              </select>
             </label>
 
             <div className="d-flex gap-2">

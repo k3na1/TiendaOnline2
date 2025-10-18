@@ -26,6 +26,7 @@ export default function NavbarAdmin() {
     { nombre: "Dashboard", ruta: "/admin" },
     { nombre: "Usuarios", ruta: "/admin/usuarios" },
     { nombre: "Productos", ruta: "/admin/productos" },
+    { nombre: "Categorías", ruta: "/admin/categorias" },
     { nombre: "Boletas", ruta: "/admin/boletas" },
   ];
 
@@ -37,7 +38,7 @@ export default function NavbarAdmin() {
 
     // 🛒 El Vendedor solo ve Productos y Boletas
     if (usuario.tipo === "Vendedor")
-      return ["Productos", "Boletas"].includes(sec.nombre);
+      return ["Productos", "Boletas", "Categorías"].includes(sec.nombre);
 
     // 🚫 Cualquier otro rol no ve nada
     return false;

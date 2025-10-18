@@ -19,3 +19,21 @@ h1 {
   transform: translateY(-5px);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
+
+.list-group-item {
+  cursor: pointer;
+  border: none;
+  border-bottom: 1px solid #ddd;
+  background-color: #fafafa;
+  transition: all 0.2s ease;
+}
+
+.list-group-item:hover {
+  background-color: #f0e6dc;
+}
+
+.list-group-item.active {
+  background-color: #3e2723 !important;
+  color: #fff !important;
+  font-weight: bold;
+}

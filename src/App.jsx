@@ -23,6 +23,7 @@ import AdminDashboard from './pages/admin/AdminDashboard.jsx'
 import AdminUsuarios from './pages/admin/AdminUsuarios.jsx'
 import AdminProductos from './pages/admin/AdminProductos.jsx'
 import AdminBoletas from './pages/admin/AdminBoletas.jsx'
+import AdminCategorias from './pages/admin/AdminCategorias.jsx'
 
 import "./assets/styles/global.css"
 
@@ -56,6 +57,7 @@ function App() {
       <Route path="/admin/usuarios" element={<AdminLayout><AdminUsuarios /></AdminLayout>} />
       <Route path="/admin/productos" element={<AdminLayout><AdminProductos /></AdminLayout>} />
       <Route path="/admin/boletas" element={<AdminLayout><AdminBoletas /></AdminLayout>} />
+      <Route path="/admin/categorias" element={<AdminLayout><AdminCategorias /></AdminLayout>} />
     </Routes>
     </Router>
     </>
