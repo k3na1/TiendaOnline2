@@ -6,37 +6,49 @@ export default function Boleta() {
   const [boleta, setBoleta] = useState(null);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-        const datosCompra = JSON.parse(localStorage.getItem("datosCompra"));
+  const timer = setTimeout(() => {
+    // Intenta cargar primero desde datosCompra (pago)
+    let datos = JSON.parse(localStorage.getItem("datosCompra"));
 
-        if (!datosCompra) {
-        console.warn("⚠️ No se encontraron datos de compra, redirigiendo...");
-        navigate("/productos");
-        return;
-        }
+    // Si no hay datosCompra, intenta cargar desde boletaSeleccionada (admin)
+    if (!datos) {
+      datos = JSON.parse(localStorage.getItem("boletaSeleccionada"));
+    }
 
-        // Generar ID única
-        const idBoleta = `#${new Date().getFullYear()}${String(
-        Math.floor(Math.random() * 10000)
-        ).padStart(4, "0")}`;
+    if (!datos) {
+      console.warn("⚠️ No se encontraron datos de boleta o compra, redirigiendo...");
+      navigate("/productos");
+      return;
+    }
 
-        const nuevaBoleta = { id: idBoleta, ...datosCompra };
+    const idBoleta =
+      datos.id || `#${new Date().getFullYear()}${String(Math.floor(Math.random() * 10000)).padStart(4, "0")}`;
 
-        setBoleta(nuevaBoleta);
+    const nuevaBoleta = { id: idBoleta, ...datos };
 
-        // Guardar en historial
-        const historial = JSON.parse(localStorage.getItem("boletas")) || [];
-        historial.push(nuevaBoleta);
-        localStorage.setItem("boletas", JSON.stringify(historial));
+    setBoleta(nuevaBoleta);
 
-        // Borrar datos temporales después de 2 s
-        setTimeout(() => {
+    // Si viene de Pago, guardamos en historial (para no duplicar desde admin)
+    if (localStorage.getItem("datosCompra")) {
+      const historial = JSON.parse(localStorage.getItem("boletas")) || [];
+      historial.push(nuevaBoleta);
+      localStorage.setItem("boletas", JSON.stringify(historial));
+
+      // limpiamos datosCompra después
+      setTimeout(() => {
         localStorage.removeItem("datosCompra");
-        }, 2000);
-    }, 300); // 👈 pequeño delay de 0.3s para dar tiempo al guardado
+      }, 1500);
+    }
 
-    return () => clearTimeout(timer);
-  }, [navigate]);
+    // Si vino desde admin, limpiamos boletaSeleccionada luego
+    setTimeout(() => {
+      localStorage.removeItem("boletaSeleccionada");
+    }, 3000);
+  }, 300);
+
+  return () => clearTimeout(timer);
+}, [navigate]);
+
 
 
   if (!boleta) {

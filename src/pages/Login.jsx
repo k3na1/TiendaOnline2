@@ -83,7 +83,7 @@ export default function Login() {
     if (usuario.tipo === "Administrador") {
       navigate("/admin");
     } else if (usuario.tipo === "Vendedor") {
-      navigate("/panel-vendedor");
+      navigate("/admin/productos");
     } else {
       navigate("/");
     }

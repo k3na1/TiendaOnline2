@@ -6,28 +6,44 @@ export default function Navbar() {
 
   useEffect(() => {
     const cargarUsuario = () => {
-        const usuarioGuardado = JSON.parse(localStorage.getItem("usuarioLogueado"));
-        setUsuario(usuarioGuardado || null);
+      const usuarioGuardado = JSON.parse(localStorage.getItem("usuarioLogueado"));
+      setUsuario(usuarioGuardado || null);
     };
 
     cargarUsuario(); // carga inicial
-
-    // escucha cambios manuales
     window.addEventListener("usuarioActualizado", cargarUsuario);
-    window.addEventListener("storage", cargarUsuario); // por si cambia desde otra pestaña
+    window.addEventListener("storage", cargarUsuario);
 
     return () => {
-        window.removeEventListener("usuarioActualizado", cargarUsuario);
-        window.removeEventListener("storage", cargarUsuario);
+      window.removeEventListener("usuarioActualizado", cargarUsuario);
+      window.removeEventListener("storage", cargarUsuario);
     };
   }, []);
 
-
   const handleLogout = () => {
     localStorage.removeItem("usuarioLogueado");
-    localStorage.removeItem("carrito"); // opcional: limpia el carrito al salir
+    localStorage.removeItem("carrito");
     setUsuario(null);
-    window.location.href = "/"; // redirigir al inicio
+    window.location.href = "/";
+  };
+
+  // ✅ Botón que se muestra solo a Admin o Vendedor
+  const renderBotonAdmin = () => {
+    if (!usuario) return null;
+    if (usuario.tipo === "Administrador") {
+      return (
+        <a href="/admin" className="btn btn-outline-light fw-bold">
+          Panel de Administración
+        </a>
+      );
+    } else if (usuario.tipo === "Vendedor") {
+      return (
+        <a href="/admin/productos" className="btn btn-outline-light fw-bold">
+          Panel de Vendedor
+        </a>
+      );
+    }
+    return null;
   };
 
   return (
@@ -47,10 +63,11 @@ export default function Navbar() {
             <a href="/carrito">🛒 Carrito</a>
           </div>
 
-          {/* Zona derecha: Registro/Login o Usuario activo */}
+          {/* Zona derecha */}
           <div className="navbar-auth d-flex gap-3 align-items-center">
             {usuario ? (
               <>
+                {renderBotonAdmin()}
                 <span style={{ color: "#fff", fontWeight: "bold" }}>
                   Bienvenido, {usuario.nombre}
                 </span>

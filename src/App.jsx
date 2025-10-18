@@ -18,6 +18,7 @@ import Boleta from './pages/Boleta.jsx'
 import AdminDashboard from './pages/admin/AdminDashboard.jsx'
 import AdminUsuarios from './pages/admin/AdminUsuarios.jsx'
 import AdminProductos from './pages/admin/AdminProductos.jsx'
+import AdminBoletas from './pages/admin/AdminBoletas.jsx'
 
 import "./assets/styles/global.css"
 
@@ -44,6 +45,7 @@ function App() {
       <Route path="/admin" element={<AdminLayout><AdminDashboard /></AdminLayout>} />
       <Route path="/admin/usuarios" element={<AdminLayout><AdminUsuarios /></AdminLayout>} />
       <Route path="/admin/productos" element={<AdminLayout><AdminProductos /></AdminLayout>} />
+      <Route path="/admin/boletas" element={<AdminLayout><AdminBoletas /></AdminLayout>} />
     </Routes>
     </Router>
     </>
