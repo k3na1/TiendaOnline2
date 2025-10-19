@@ -4,52 +4,38 @@ import { useNavigate } from "react-router-dom";
 export default function Boleta() {
   const navigate = useNavigate();
   const [boleta, setBoleta] = useState(null);
+  const [compraFallida, setCompraFallida] = useState(false);
 
   useEffect(() => {
-  const timer = setTimeout(() => {
-    // Intenta cargar primero desde datosCompra (pago)
-    let datos = JSON.parse(localStorage.getItem("datosCompra"));
+    const timer = setTimeout(() => {
+      let datos = JSON.parse(localStorage.getItem("datosCompra"));
+      if (!datos) datos = JSON.parse(localStorage.getItem("boletaSeleccionada"));
+      if (!datos) {
+        console.warn("⚠️ No se encontraron datos de boleta o compra, redirigiendo...");
+        navigate("/productos");
+        return;
+      }
 
-    // Si no hay datosCompra, intenta cargar desde boletaSeleccionada (admin)
-    if (!datos) {
-      datos = JSON.parse(localStorage.getItem("boletaSeleccionada"));
-    }
+      const idBoleta =
+        datos.id ||
+        `#${new Date().getFullYear()}${String(
+          Math.floor(Math.random() * 10000)
+        ).padStart(4, "0")}`;
 
-    if (!datos) {
-      console.warn("⚠️ No se encontraron datos de boleta o compra, redirigiendo...");
-      navigate("/productos");
-      return;
-    }
+      const nuevaBoleta = { id: idBoleta, ...datos };
+      setBoleta(nuevaBoleta);
 
-    const idBoleta =
-      datos.id || `#${new Date().getFullYear()}${String(Math.floor(Math.random() * 10000)).padStart(4, "0")}`;
+      if (localStorage.getItem("datosCompra")) {
+        const historial = JSON.parse(localStorage.getItem("boletas")) || [];
+        historial.push(nuevaBoleta);
+        localStorage.setItem("boletas", JSON.stringify(historial));
+        setTimeout(() => localStorage.removeItem("datosCompra"), 1500);
+      }
 
-    const nuevaBoleta = { id: idBoleta, ...datos };
-
-    setBoleta(nuevaBoleta);
-
-    // Si viene de Pago, guardamos en historial (para no duplicar desde admin)
-    if (localStorage.getItem("datosCompra")) {
-      const historial = JSON.parse(localStorage.getItem("boletas")) || [];
-      historial.push(nuevaBoleta);
-      localStorage.setItem("boletas", JSON.stringify(historial));
-
-      // limpiamos datosCompra después
-      setTimeout(() => {
-        localStorage.removeItem("datosCompra");
-      }, 1500);
-    }
-
-    // Si vino desde admin, limpiamos boletaSeleccionada luego
-    setTimeout(() => {
-      localStorage.removeItem("boletaSeleccionada");
-    }, 3000);
-  }, 300);
-
-  return () => clearTimeout(timer);
-}, [navigate]);
-
-
+      setTimeout(() => localStorage.removeItem("boletaSeleccionada"), 3000);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [navigate]);
 
   if (!boleta) {
     return (
@@ -65,7 +51,7 @@ export default function Boleta() {
     );
   }
 
-  const { id, usuario, carrito, subtotal, envio, total, fecha } = boleta;
+  const { id, usuario, carrito, envio, total } = boleta;
 
   const handleDescargarPDF = () => {
     alert("📄 Simulación: Se descargará la boleta en PDF (próximamente).");
@@ -81,95 +67,66 @@ export default function Boleta() {
         className="shadow p-4 rounded bg-white"
         style={{ maxWidth: "900px", width: "100%" }}
       >
-        {/* Encabezado */}
+        {/* Encabezado dinámico */}
         <div className="d-flex justify-content-between align-items-center mb-4">
           <div>
-            <h4 className="text-success fw-bold mb-0">
-              ✅ Se ha realizado la compra. nro {id}
-            </h4>
+            {compraFallida ? (
+              <h4 className="text-danger fw-bold mb-0">
+                ❌ No se ha logrado procesar el pago. nro {id}
+              </h4>
+            ) : (
+              <h4 className="text-success fw-bold mb-0">
+                ✅ Se ha realizado la compra. nro {id}
+              </h4>
+            )}
             <small className="text-muted">
-              Completa la siguiente información
+              {compraFallida
+                ? "La compra fue rechazada o falló en el proceso de pago."
+                : "Compra procesada correctamente"}
             </small>
           </div>
           <span className="text-muted">Código orden: ORDER{id.slice(1)}</span>
         </div>
 
-        {/* Información del cliente */}
+        {/* Info cliente */}
         <h5 className="fw-bold mt-3">Información del cliente</h5>
         <div className="row g-3 mb-4">
           <div className="col-md-4">
             <label className="form-label">Nombre</label>
-            <input
-              className="form-control"
-              value={usuario?.nombre || ""}
-              disabled
-            />
+            <input className="form-control" value={usuario?.nombre || ""} disabled />
           </div>
           <div className="col-md-4">
             <label className="form-label">Apellidos</label>
-            <input
-              className="form-control"
-              value={usuario?.apellidos || ""}
-              disabled
-            />
+            <input className="form-control" value={usuario?.apellidos || ""} disabled />
           </div>
           <div className="col-md-4">
             <label className="form-label">Correo</label>
-            <input
-              className="form-control"
-              value={usuario?.correo || ""}
-              disabled
-            />
+            <input className="form-control" value={usuario?.correo || ""} disabled />
           </div>
         </div>
 
-        {/* Dirección de entrega */}
-        <h5 className="fw-bold">Dirección de entrega de los productos</h5>
+        {/* Dirección */}
+        <h5 className="fw-bold">Dirección de entrega</h5>
         <div className="row g-3 mb-4">
           <div className="col-md-6">
             <label className="form-label">Calle</label>
-            <input
-              className="form-control"
-              value={envio?.direccion.calle || ""}
-              disabled
-            />
+            <input className="form-control" value={envio?.direccion.calle || ""} disabled />
           </div>
           <div className="col-md-6">
-            <label className="form-label">Departamento (opcional)</label>
-            <input
-              className="form-control"
-              value={envio?.direccion.depto || ""}
-              disabled
-            />
+            <label className="form-label">Departamento</label>
+            <input className="form-control" value={envio?.direccion.depto || ""} disabled />
           </div>
           <div className="col-md-6">
             <label className="form-label">Región</label>
-            <input
-              className="form-control"
-              value={envio?.direccion.region || ""}
-              disabled
-            />
+            <input className="form-control" value={envio?.direccion.region || ""} disabled />
           </div>
           <div className="col-md-6">
             <label className="form-label">Comuna</label>
-            <input
-              className="form-control"
-              value={envio?.direccion.comuna || ""}
-              disabled
-            />
-          </div>
-          <div className="col-12">
-            <label className="form-label">Indicaciones para la entrega</label>
-            <textarea
-              className="form-control"
-              rows="2"
-              value={envio?.direccion.detalles || ""}
-              disabled
-            ></textarea>
+            <input className="form-control" value={envio?.direccion.comuna || ""} disabled />
           </div>
         </div>
 
-        {/* Tabla de productos */}
+        {/* Tabla */}
         <div className="table-responsive mb-4">
           <table className="table table-bordered align-middle text-center">
             <thead className="table-light">
@@ -194,9 +151,7 @@ export default function Boleta() {
                   <td>{item.nombre}</td>
                   <td>${item.precio.toLocaleString("es-CL")}</td>
                   <td>{item.cantidad}</td>
-                  <td>
-                    ${(item.precio * item.cantidad).toLocaleString("es-CL")}
-                  </td>
+                  <td>${(item.precio * item.cantidad).toLocaleString("es-CL")}</td>
                 </tr>
               ))}
             </tbody>
@@ -205,26 +160,28 @@ export default function Boleta() {
 
         {/* Total */}
         <div className="text-end fw-bold fs-5 mb-3">
-          Total pagado:{" "}
-          <span className="text-success">
+          Total:{" "}
+          <span className={compraFallida ? "text-danger" : "text-success"}>
             ${total.toLocaleString("es-CL")}
           </span>
         </div>
 
         {/* Botones */}
-        <div className="d-flex justify-content-end gap-3">
+        <div className="d-flex justify-content-between align-items-center flex-wrap gap-3">
           <button
-            className="btn btn-danger fw-bold"
-            onClick={handleDescargarPDF}
+            className="btn btn-outline-danger fw-bold"
+            onClick={() => setCompraFallida(!compraFallida)}
           >
-            Imprimir boleta en PDF
+            ⚙️ Simular fallo en la compra
           </button>
-          <button
-            className="btn btn-success fw-bold"
-            onClick={handleEnviarCorreo}
-          >
-            Enviar boleta por email
-          </button>
+          <div className="d-flex gap-2">
+            <button className="btn btn-danger fw-bold" onClick={handleDescargarPDF}>
+              Imprimir boleta en PDF
+            </button>
+            <button className="btn btn-success fw-bold" onClick={handleEnviarCorreo}>
+              Enviar boleta por email
+            </button>
+          </div>
         </div>
       </div>
     </main>
