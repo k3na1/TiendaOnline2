@@ -7,6 +7,7 @@ export default function AdminProductos() {
   const [busqueda, setBusqueda] = useState("");
   const [modalAbierto, setModalAbierto] = useState(false);
   const [modoEdicion, setModoEdicion] = useState(false);
+  const [mostrarCriticos, setMostrarCriticos] = useState(false);
   const [productoActual, setProductoActual] = useState({
     id: "",
     nombre: "",
@@ -71,11 +72,18 @@ export default function AdminProductos() {
     setModalAbierto(false);
   };
 
-  const filtrados = productos.filter((p) =>
-    (p.nombre + p.id)
-      .toLowerCase()
-      .includes(busqueda.toLowerCase())
+  // 🔎 Filtro por búsqueda
+  let filtrados = productos.filter((p) =>
+    (p.nombre + p.id).toLowerCase().includes(busqueda.toLowerCase())
   );
+
+  // 🧮 Productos con stock bajo
+  const productosCriticos = productos.filter((p) => parseInt(p.stock) <= 10);
+
+  // 🧠 Si el checkbox está activado, filtramos solo los críticos
+  if (mostrarCriticos) {
+    filtrados = filtrados.filter((p) => parseInt(p.stock) <= 10);
+  }
 
   return (
     <div className="admin-dashboard">
@@ -92,6 +100,23 @@ export default function AdminProductos() {
           value={busqueda}
           onChange={(e) => setBusqueda(e.target.value)}
         />
+      </section>
+
+      {/* ⚠️ Estado de stock crítico */}
+      <section className="stock-alert" style={{ marginBottom: "1rem" }}>
+        <label style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <input
+            type="checkbox"
+            checked={mostrarCriticos}
+            onChange={(e) => setMostrarCriticos(e.target.checked)}
+          />
+          Mostrar solo productos con bajo stock
+        </label>
+        <p style={{ marginTop: "0.5rem", color: productosCriticos.length > 0 ? "#c0392b" : "#27ae60" }}>
+          {productosCriticos.length > 0
+            ? `${productosCriticos.length} producto(s) con stock crítico`
+            : "Todos los productos están con stock adecuado"}
+        </p>
       </section>
 
       {/* 📋 Tabla */}
@@ -116,12 +141,20 @@ export default function AdminProductos() {
               </tr>
             ) : (
               filtrados.map((p) => (
-                <tr key={p.id}>
+                <tr
+                  key={p.id}
+                  style={{
+                    backgroundColor:
+                      parseInt(p.stock) <= 10 ? "rgba(255, 0, 0, 0.08)" : "transparent",
+                  }}
+                >
                   <td>{p.id}</td>
                   <td>{p.nombre}</td>
                   <td>{p.categoria || "—"}</td>
                   <td>${p.precio}</td>
-                  <td>{p.stock}</td>
+                  <td style={{ color: parseInt(p.stock) <= 10 ? "#c0392b" : "inherit" }}>
+                    {p.stock}
+                  </td>
                   <td>
                     {p.imagen ? (
                       <img
@@ -154,7 +187,8 @@ export default function AdminProductos() {
           <form className="forms-producto" onSubmit={guardarProducto}>
             <h3>{modoEdicion ? "Editar producto" : "Nuevo producto"}</h3>
 
-            <label>ID (SKU)
+            <label>
+              ID (SKU)
               <input
                 type="text"
                 value={productoActual.id}
@@ -166,7 +200,8 @@ export default function AdminProductos() {
               />
             </label>
 
-            <label>Nombre
+            <label>
+              Nombre
               <input
                 type="text"
                 value={productoActual.nombre}
@@ -177,7 +212,8 @@ export default function AdminProductos() {
               />
             </label>
 
-            <label>Descripción
+            <label>
+              Descripción
               <textarea
                 value={productoActual.descripcion}
                 onChange={(e) =>
@@ -191,7 +227,8 @@ export default function AdminProductos() {
               />
             </label>
 
-            <label>Categoría
+            <label>
+              Categoría
               <select
                 className="form-control"
                 value={productoActual.categoria}
@@ -217,7 +254,8 @@ export default function AdminProductos() {
             </label>
 
             <div className="d-flex gap-2">
-              <label style={{ flex: 1 }}>Precio (CLP)
+              <label style={{ flex: 1 }}>
+                Precio (CLP)
                 <input
                   type="number"
                   value={productoActual.precio}
@@ -228,7 +266,8 @@ export default function AdminProductos() {
                 />
               </label>
 
-              <label style={{ flex: 1 }}>Stock
+              <label style={{ flex: 1 }}>
+                Stock
                 <input
                   type="number"
                   value={productoActual.stock}
@@ -240,7 +279,8 @@ export default function AdminProductos() {
               </label>
             </div>
 
-            <label>URL de Imagen
+            <label>
+              URL de Imagen
               <input
                 type="url"
                 value={productoActual.imagen}
@@ -255,7 +295,11 @@ export default function AdminProductos() {
               <button type="submit" className="btn-primary">
                 Guardar
               </button>
-              <button type="button" className="btn-danger" onClick={() => setModalAbierto(false)}>
+              <button
+                type="button"
+                className="btn-danger"
+                onClick={() => setModalAbierto(false)}
+              >
                 Cancelar
               </button>
             </div>

@@ -23,6 +23,7 @@ export default function NavbarAdmin() {
 
   // 🔹 Determinar secciones visibles según rol
   const seccionesBase = [
+    { nombre: "Perfil", ruta: "/admin/perfil" },
     { nombre: "Dashboard", ruta: "/admin" },
     { nombre: "Usuarios", ruta: "/admin/usuarios" },
     { nombre: "Productos", ruta: "/admin/productos" },
