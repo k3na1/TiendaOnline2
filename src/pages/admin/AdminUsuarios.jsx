@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
+import axios from "axios"; // <--- Importar Axios
 import "../../assets/styles/dashboard.css";
-
 
 export default function AdminUsuarios() {
   const [usuarios, setUsuarios] = useState([]);
@@ -8,7 +8,11 @@ export default function AdminUsuarios() {
   const [filtro, setFiltro] = useState("");
   const [modalAbierto, setModalAbierto] = useState(false);
   const [modoEdicion, setModoEdicion] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  // Estado del formulario
   const [usuarioActual, setUsuarioActual] = useState({
+    id: null, // Necesitamos el ID para editar en BD
     run: "",
     tipo: "",
     nombre: "",
@@ -17,21 +21,31 @@ export default function AdminUsuarios() {
     password: "",
   });
 
-  useEffect(() => {
-    const data = JSON.parse(localStorage.getItem("usuarios")) || [];
-    setUsuarios(data);
-  }, []);
-
-  const guardarUsuarios = (arr) => {
-    localStorage.setItem("usuarios", JSON.stringify(arr));
-    setUsuarios(arr);
+  // 1. Cargar Usuarios
+  const cargarUsuarios = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get("http://localhost:3001/api/users");
+      setUsuarios(response.data);
+    } catch (error) {
+      console.error(error);
+      alert("Error cargando usuarios");
+    } finally {
+      setLoading(false);
+    }
   };
 
+  useEffect(() => {
+    cargarUsuarios();
+  }, []);
+
+  // 2. Modal Nuevo
   const abrirModalNuevo = () => {
     setModoEdicion(false);
     setUsuarioActual({
+      id: null,
       run: "",
-      tipo: "",
+      tipo: "Cliente", // Por defecto
       nombre: "",
       apellidos: "",
       correo: "",
@@ -40,49 +54,86 @@ export default function AdminUsuarios() {
     setModalAbierto(true);
   };
 
+  // 3. Modal Editar
   const abrirModalEditar = (user) => {
     setModoEdicion(true);
-    setUsuarioActual(user);
+    setUsuarioActual({
+      id: user.id, // Guardamos ID
+      run: user.run,
+      tipo: user.tipo, // Admin, Cliente, etc.
+      nombre: user.nombre,
+      apellidos: user.apellidos,
+      correo: user.correo,
+      password: user.password || "", // A veces no traemos la pass por seguridad
+    });
     setModalAbierto(true);
   };
 
-  const eliminarUsuario = (run) => {
-    if (confirm("¿Eliminar este usuario?")) {
-      const nuevos = usuarios.filter((u) => u.run !== run);
-      guardarUsuarios(nuevos);
+  // 4. Eliminar
+  const eliminarUsuario = async (id) => {
+    if (confirm("¿Eliminar este usuario de la base de datos?")) {
+      try {
+        await axios.delete(`http://localhost:3001/api/users/${id}`);
+        cargarUsuarios();
+        alert("Usuario eliminado");
+      } catch (error) {
+        alert("Error al eliminar usuario");
+      }
     }
   };
 
-  const guardarUsuario = (e) => {
+  // 5. Guardar (Crear o Editar)
+  const guardarUsuario = async (e) => {
     e.preventDefault();
-    const nuevos = [...usuarios];
-    if (modoEdicion) {
-      const idx = nuevos.findIndex((u) => u.run === usuarioActual.run);
-      if (idx >= 0) nuevos[idx] = usuarioActual;
-    } else {
-      nuevos.push(usuarioActual);
+    
+    try {
+      if (modoEdicion) {
+        // ACTUALIZAR
+        // Usamos el endpoint normal para datos básicos
+        await axios.put(`http://localhost:3001/api/users/${usuarioActual.id}`, usuarioActual);
+        
+        // TRUCO: Si cambiaste el rol, necesitamos llamar al endpoint especial que creamos ayer
+        // (Si decidiste usar la "Opción 1" de desarrollo donde updateUser acepta 'tipo', esto ya funciona solo.
+        // Si usaste la "Opción 2" segura, descomenta la siguiente línea):
+        
+        await axios.put(`http://localhost:3001/api/users/${usuarioActual.id}/role`, { tipo: usuarioActual.tipo });
+
+        alert("Usuario actualizado");
+      } else {
+        // CREAR
+        await axios.post("http://localhost:3001/api/users", usuarioActual);
+        alert("Usuario creado");
+      }
+      setModalAbierto(false);
+      cargarUsuarios();
+    } catch (error) {
+      console.error(error);
+      alert("Error al guardar usuario. Revisa que el RUN/Correo no estén repetidos.");
     }
-    guardarUsuarios(nuevos);
-    setModalAbierto(false);
   };
 
+  // Filtros visuales (Frontend)
   const filtrados = usuarios.filter((u) => {
-    const coincideBusqueda =
-      u.run.includes(busqueda) ||
-      u.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
-      u.correo.toLowerCase().includes(busqueda.toLowerCase());
-    const coincideTipo = filtro ? u.tipo === filtro : true;
+    const texto = (u.run + " " + u.nombre + " " + u.correo).toLowerCase();
+    const coincideBusqueda = texto.includes(busqueda.toLowerCase());
+    // Normalizamos mayúsculas/minúsculas para el filtro de tipo
+    const tipoUser = u.tipo ? u.tipo.toLowerCase() : "";
+    const filtroLower = filtro.toLowerCase();
+    const coincideTipo = filtro ? tipoUser === filtroLower : true;
+    
     return coincideBusqueda && coincideTipo;
   });
 
+  // Contadores (Ajustados a minúsculas/mayúsculas por seguridad)
   const total = usuarios.length;
-  const vendedores = usuarios.filter((u) => u.tipo === "Vendedor").length;
-  const clientes = usuarios.filter((u) => u.tipo === "Cliente").length;
-  const admins = usuarios.filter((u) => u.tipo === "Administrador").length;
+  const vendedores = usuarios.filter((u) => u.tipo && u.tipo.toLowerCase() === "vendedor").length;
+  const clientes = usuarios.filter((u) => u.tipo && u.tipo.toLowerCase() === "cliente").length;
+  const admins = usuarios.filter((u) => u.tipo && u.tipo.toLowerCase() === "administrador").length || 
+                  usuarios.filter((u) => u.tipo && u.tipo.toLowerCase() === "admin").length;
 
   return (
     <div className="admin-dashboard">
-      <h1 className="mb-4 fw-bold text-light">Usuarios</h1>
+      <h1 className="mb-4 fw-bold text-light">Gestión de Usuarios</h1>
 
       {/* Resumen */}
       <section className="summary">
@@ -105,18 +156,20 @@ export default function AdminUsuarios() {
         />
         <select value={filtro} onChange={(e) => setFiltro(e.target.value)}>
           <option value="">Todos los tipos</option>
-          <option>Administrador</option>
-          <option>Vendedor</option>
-          <option>Cliente</option>
+          <option value="Administrador">Administrador</option>
+          <option value="Vendedor">Vendedor</option>
+          <option value="Cliente">Cliente</option>
         </select>
       </section>
 
       {/* Tabla */}
       <section className="panel">
-        <h2 className="panel-title">Listado</h2>
+        <h2 className="panel-title">Base de Datos</h2>
+        {loading ? <p className="text-center">Cargando...</p> : (
         <table className="tabla">
           <thead>
             <tr>
+              <th>ID</th>
               <th>RUN</th>
               <th>Nombre</th>
               <th>Correo</th>
@@ -126,23 +179,29 @@ export default function AdminUsuarios() {
           </thead>
           <tbody>
             {filtrados.length === 0 ? (
-              <tr><td colSpan="5">Sin resultados</td></tr>
+              <tr><td colSpan="6">Sin resultados</td></tr>
             ) : (
               filtrados.map((u) => (
-                <tr key={u.run}>
+                <tr key={u.id}>
+                  <td>{u.id}</td>
                   <td>{u.run}</td>
                   <td>{u.nombre} {u.apellidos}</td>
                   <td>{u.correo}</td>
-                  <td>{u.tipo}</td>
+                  <td>
+                    <span className={`badge ${u.tipo === 'admin' ? 'bg-danger' : 'bg-secondary'}`}>
+                        {u.tipo}
+                    </span>
+                  </td>
                   <td>
                     <button className="btn-primary" onClick={() => abrirModalEditar(u)}>Editar</button>
-                    <button className="btn-danger" onClick={() => eliminarUsuario(u.run)}>Eliminar</button>
+                    <button className="btn-danger" onClick={() => eliminarUsuario(u.id)}>Eliminar</button>
                   </td>
                 </tr>
               ))
             )}
           </tbody>
         </table>
+        )}
       </section>
 
       {/* Modal */}
@@ -153,11 +212,11 @@ export default function AdminUsuarios() {
 
             <label>RUN
               <input
-                type="text"
+                type="number" // Cambiamos a number para evitar problemas con BD INT
                 value={usuarioActual.run}
                 onChange={(e) => setUsuarioActual({ ...usuarioActual, run: e.target.value })}
                 required
-                disabled={modoEdicion}
+                disabled={modoEdicion} // No se suele editar el RUN
               />
             </label>
 
@@ -168,9 +227,9 @@ export default function AdminUsuarios() {
                 required
               >
                 <option value="">Seleccione...</option>
-                <option>Administrador</option>
-                <option>Vendedor</option>
-                <option>Cliente</option>
+                <option value="admin">Administrador</option>
+                <option value="vendedor">Vendedor</option>
+                <option value="cliente">Cliente</option>
               </select>
             </label>
 
@@ -204,9 +263,10 @@ export default function AdminUsuarios() {
             <label>Password
               <input
                 type="password"
+                placeholder={modoEdicion ? "(Dejar en blanco para no cambiar)" : "Contraseña"}
                 value={usuarioActual.password}
                 onChange={(e) => setUsuarioActual({ ...usuarioActual, password: e.target.value })}
-                required
+                required={!modoEdicion}
               />
             </label>
 

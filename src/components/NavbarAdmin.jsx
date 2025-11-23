@@ -1,5 +1,5 @@
 import "../assets/styles/admin.css";
-import { useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom"; // <--- Importar Link
 import { useEffect, useState } from "react";
 
 export default function NavbarAdmin() {
@@ -21,7 +21,6 @@ export default function NavbarAdmin() {
     navigate("/login");
   };
 
-  // 🔹 Determinar secciones visibles según rol
   const seccionesBase = [
     { nombre: "Perfil", ruta: "/admin/perfil" },
     { nombre: "Dashboard", ruta: "/admin" },
@@ -31,17 +30,19 @@ export default function NavbarAdmin() {
     { nombre: "Boletas", ruta: "/admin/boletas" },
   ];
 
+  // 🔹 Filtrado robusto (Mayúsculas/Minúsculas)
   const seccionesFiltradas = seccionesBase.filter((sec) => {
-    if (!usuario) return false;
+    if (!usuario || !usuario.tipo) return false;
 
-    // 👑 El Administrador ve todo
-    if (usuario.tipo === "Administrador") return true;
+    const rol = usuario.tipo.toLowerCase(); // Normalizar a minúscula
 
-    // 🛒 El Vendedor solo ve Productos y Boletas
-    if (usuario.tipo === "Vendedor")
-      return ["Productos", "Boletas", "Categorías"].includes(sec.nombre);
+    // 👑 Admin ve todo (acepta "admin" y "administrador")
+    if (rol === "administrador" || rol === "admin") return true;
 
-    // 🚫 Cualquier otro rol no ve nada
+    // 🛒 Vendedor ve solo productos/boletas/categorías
+    if (rol === "vendedor")
+      return ["Productos", "Boletas", "Categorías", "Perfil"].includes(sec.nombre);
+
     return false;
   });
 
@@ -53,25 +54,24 @@ export default function NavbarAdmin() {
 
       {usuario && (
         <p className="text-light mb-3">
-          Rol: <span className="fw-bold">{usuario.tipo}</span>
+          Rol: <span className="fw-bold text-warning" style={{textTransform: 'capitalize'}}>{usuario.tipo}</span>
         </p>
       )}
 
       <nav className="d-flex flex-column w-100 gap-2">
         {seccionesFiltradas.map((sec) => (
-          <a
+          <Link
             key={sec.ruta}
-            href={sec.ruta}
+            to={sec.ruta} // Usamos 'to' en vez de 'href'
             className={`admin-link ${esRutaActiva(sec.ruta) ? "active" : ""}`}
           >
             {sec.nombre}
-          </a>
+          </Link>
         ))}
       </nav>
 
       <hr className="border-secondary w-100 my-4" />
 
-      {/* 🔙 Nuevo botón: Volver a la tienda */}
       <button
         onClick={() => navigate("/")}
         className="btn-tienda btn btn-warning fw-bold text-dark w-100 mb-2"

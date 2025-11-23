@@ -1,53 +1,44 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import axios from "axios"; // <--- Importamos Axios
 import "../assets/styles/home.css";
 
 export default function Home() {
   const [productosDestacados, setProductosDestacados] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Obtener productos desde localStorage
-    const productosGuardados = JSON.parse(localStorage.getItem("productos")) || [];
+    const cargarProductos = async () => {
+      try {
+        // 1. Pedimos los productos al Backend
+        const respuesta = await axios.get("http://localhost:3001/api/products");
+        const todosLosProductos = respuesta.data;
 
-    if (productosGuardados.length > 0) {
-      // Mezclar y tomar 3 productos aleatorios
-      const productosAleatorios = [...productosGuardados]
-        .sort(() => 0.5 - Math.random())
-        .slice(0, 3);
+        if (todosLosProductos.length > 0) {
+          // 2. Mezclar y tomar 3 aleatorios
+          const aleatorios = [...todosLosProductos]
+            .sort(() => 0.5 - Math.random()) // Mezclar array
+            .slice(0, 3); // Tomar los primeros 3
 
-      setProductosDestacados(productosAleatorios);
-    } else {
-      // Productos de ejemplo por si no hay datos
-      setProductosDestacados([
-        {
-          id: "SKU001",
-          nombre: "Café de Grano Clásico",
-          precio: 12000,
-          imagen:
-            "https://static.wixstatic.com/media/48f789_53c573c80f8c416586d3ee6aa1a75f69~mv2.jpg/v1/fill/w_980,h_653,al_c,q_85,usm_0.66_1.00_0.01,enc_auto/48f789_53c573c80f8c416586d3ee6aa1a75f69~mv2.jpg",
-        },
-        {
-          id: "SKU002",
-          nombre: "Café de Origen Colombia",
-          precio: 14000,
-          imagen:
-            "https://cdn.shopify.com/s/files/1/0301/0190/4313/products/colombia_1024x1024.jpg?v=1596570843",
-        },
-        {
-          id: "SKU003",
-          nombre: "Café Descafeinado",
-          precio: 11000,
-          imagen:
-            "https://cdn.shopify.com/s/files/1/0521/2899/1786/products/FrenchPress.png?v=1620157489",
-        },
-      ]);
-    }
+          setProductosDestacados(aleatorios);
+        }
+      } catch (error) {
+        console.error("Error cargando productos destacados:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    cargarProductos();
   }, []);
+
+  // Imagen de respaldo por si la BD tiene un producto sin foto
+  const imagenPorDefecto = "https://via.placeholder.com/300x200?text=Sin+Imagen";
 
   return (
     <div className="home-page">
       <main className="container my-5 text-center">
-        {/* Carrusel */}
+        {/* Carrusel (Se mantiene igual) */}
         <div className="carousel-wrapper mb-5">
           <div id="carruselCafe" className="carousel slide mb-5" data-bs-ride="carousel">
             <div className="carousel-inner rounded-4 shadow">
@@ -103,32 +94,43 @@ export default function Home() {
         {/* Productos destacados */}
         <section className="destacados mt-5">
           <h2 className="mb-4">Productos destacados</h2>
-          <div className="row g-4">
-            {productosDestacados.map((p) => (
-              <div key={p.id} className="col-12 col-md-6 col-lg-4">
-                <div className="card shadow-sm border-0 h-100">
-                  <img
-                    src={p.imagen}
-                    className="card-img-top"
-                    alt={p.nombre}
-                    style={{ height: "200px", objectFit: "cover" }}
-                  />
-                  <div className="card-body">
-                    <h5 className="card-title fw-bold">{p.nombre}</h5>
-                    <p className="text-muted">
-                      ${p.precio.toLocaleString("es-CL")}
-                    </p>
-                    <Link
-                      to={`/producto/${p.id}`}
-                      className="btn btn-warning fw-bold text-dark"
-                    >
-                      Ver más
-                    </Link>
+          
+          {loading ? (
+             <div className="spinner-border text-warning" role="status">
+               <span className="visually-hidden">Cargando...</span>
+             </div>
+          ) : (
+            <div className="row g-4">
+              {productosDestacados.length === 0 ? (
+                <p className="text-muted">Aún no hay productos destacados.</p>
+              ) : (
+                productosDestacados.map((p) => (
+                  <div key={p.id} className="col-12 col-md-6 col-lg-4">
+                    <div className="card shadow-sm border-0 h-100">
+                      <img
+                        src={p.imagen || imagenPorDefecto}
+                        className="card-img-top"
+                        alt={p.nombre}
+                        style={{ height: "200px", objectFit: "cover" }}
+                      />
+                      <div className="card-body">
+                        <h5 className="card-title fw-bold">{p.nombre}</h5>
+                        <p className="text-muted">
+                          ${p.precio ? p.precio.toLocaleString("es-CL") : 0}
+                        </p>
+                        <Link
+                          to={`/producto/${p.id}`}
+                          className="btn btn-warning fw-bold text-dark"
+                        >
+                          Ver más
+                        </Link>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-            ))}
-          </div>
+                ))
+              )}
+            </div>
+          )}
         </section>
       </main>
     </div>

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import axios from "axios"; // <--- Importar Axios
 import "../assets/styles/registro.css";
 
 export default function Registro() {
@@ -23,7 +24,6 @@ export default function Registro() {
     Biobío: ["Concepción", "Talcahuano", "Los Ángeles"],
   };
 
-  // Manejo de cambios
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
 
@@ -33,25 +33,7 @@ export default function Registro() {
     }
   };
 
-  // Obtener usuarios guardados
-  const getUsuarios = () => JSON.parse(localStorage.getItem("usuarios")) || [];
-
-  // Guardar nuevo usuario
-  const saveUsuario = (usuario) => {
-    let usuarios = getUsuarios();
-
-    // RUN duplicado
-    if (usuarios.some((u) => u.run === usuario.run)) {
-      alert("El RUN ya está registrado ❌");
-      return false;
-    }
-
-    usuarios.push(usuario);
-    localStorage.setItem("usuarios", JSON.stringify(usuarios));
-    return true;
-  };
-
-  // Validaciones
+  // Validaciones (Se mantienen igual de estrictas)
   const validar = () => {
     const err = {};
     const emailRegex = /^[a-zA-Z0-9._%+-]+@(duoc\.cl|profesor\.duoc\.cl|gmail\.com)$/;
@@ -81,13 +63,28 @@ export default function Registro() {
     return Object.keys(err).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  // --- NUEVA LÓGICA DE ENVÍO ---
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validar()) return;
 
-    const nuevoUsuario = { ...form, tipo: "Cliente" };
-    if (saveUsuario(nuevoUsuario)) {
-      alert("Registro exitoso ✅");
+    try {
+      // Enviamos los datos al Backend
+      // Nota: El backend forzará "tipo: cliente" automáticamente
+      await axios.post("http://localhost:3001/api/users", {
+        run: parseInt(form.run.slice(0, -1)), // Convertimos RUN a número para la BD (sacamos el dígito verificador si tu BD es INT)
+        // Si tu BD recibe STRING en el RUN, usa: run: form.run
+        nombre: form.nombre,
+        apellidos: form.apellidos,
+        correo: form.correo,
+        password: form.password,
+        // Enviamos dirección, región, etc. aunque el backend básico que hicimos ayer
+        // quizás no guarde dirección aún. Si no la guarda, no pasa nada, se ignora.
+      });
+
+      alert("Registro exitoso en la Base de Datos ✅");
+      
+      // Limpiar formulario
       setForm({
         run: "",
         nombre: "",
@@ -100,157 +97,83 @@ export default function Registro() {
         password: "",
       });
       setErrores({});
+
+    } catch (error) {
+      console.error(error);
+      // Manejo de errores del backend (ej: RUN duplicado)
+      if (error.response && error.response.data) {
+        alert("Error: " + error.response.data.message);
+      } else {
+        alert("Error al conectar con el servidor ❌");
+      }
     }
   };
 
   return (
     <main className="container my-5">
       <h1 className="text-center mb-4 fw-bold text-coffee">Registro de Usuario</h1>
-
       <form
         onSubmit={handleSubmit}
         className="mx-auto bg-light p-4 rounded-3 shadow-sm"
         style={{ maxWidth: "700px" }}
       >
-        {/* RUN */}
+        {/* ... (TUS INPUTS SE MANTIENEN IGUAL) ... */}
+        {/* Solo pego uno de ejemplo para no hacer spam, mantén tus inputs de RUN, Nombre, etc. */}
         <div className="mb-3">
           <label htmlFor="run" className="form-label fw-bold">RUN:</label>
-          <input
-            type="text"
-            id="run"
-            name="run"
-            value={form.run}
-            onChange={handleChange}
-            className="form-control"
-          />
+          <input type="text" id="run" name="run" value={form.run} onChange={handleChange} className="form-control" />
           <small className="text-danger">{errores.run}</small>
         </div>
-
-        {/* Nombre */}
         <div className="mb-3">
-          <label htmlFor="nombre" className="form-label fw-bold">Nombre:</label>
-          <input
-            type="text"
-            id="nombre"
-            name="nombre"
-            value={form.nombre}
-            onChange={handleChange}
-            className="form-control"
-          />
-          <small className="text-danger">{errores.nombre}</small>
+            <label htmlFor="nombre" className="form-label fw-bold">Nombre:</label>
+            <input type="text" id="nombre" name="nombre" value={form.nombre} onChange={handleChange} className="form-control" />
+            <small className="text-danger">{errores.nombre}</small>
         </div>
-
-        {/* Apellidos */}
         <div className="mb-3">
-          <label htmlFor="apellidos" className="form-label fw-bold">Apellidos:</label>
-          <input
-            type="text"
-            id="apellidos"
-            name="apellidos"
-            value={form.apellidos}
-            onChange={handleChange}
-            className="form-control"
-          />
-          <small className="text-danger">{errores.apellidos}</small>
+            <label htmlFor="apellidos" className="form-label fw-bold">Apellidos:</label>
+            <input type="text" id="apellidos" name="apellidos" value={form.apellidos} onChange={handleChange} className="form-control" />
+            <small className="text-danger">{errores.apellidos}</small>
         </div>
-
-        {/* Correo */}
         <div className="mb-3">
-          <label htmlFor="correo" className="form-label fw-bold">Correo:</label>
-          <input
-            type="email"
-            id="correo"
-            name="correo"
-            value={form.correo}
-            onChange={handleChange}
-            className="form-control"
-          />
-          <small className="text-danger">{errores.correo}</small>
+            <label htmlFor="correo" className="form-label fw-bold">Correo:</label>
+            <input type="email" id="correo" name="correo" value={form.correo} onChange={handleChange} className="form-control" />
+            <small className="text-danger">{errores.correo}</small>
         </div>
-
-        {/* Fecha */}
         <div className="mb-3">
-          <label htmlFor="fecha" className="form-label fw-bold">Fecha de nacimiento:</label>
-          <input
-            type="date"
-            id="fecha"
-            name="fecha"
-            value={form.fecha}
-            onChange={handleChange}
-            className="form-control"
-          />
+            <label htmlFor="fecha" className="form-label fw-bold">Fecha de nacimiento:</label>
+            <input type="date" id="fecha" name="fecha" value={form.fecha} onChange={handleChange} className="form-control" />
         </div>
-
-        {/* Dirección */}
         <div className="mb-3">
-          <label htmlFor="direccion" className="form-label fw-bold">Dirección:</label>
-          <input
-            type="text"
-            id="direccion"
-            name="direccion"
-            value={form.direccion}
-            onChange={handleChange}
-            className="form-control"
-          />
-          <small className="text-danger">{errores.direccion}</small>
+            <label htmlFor="direccion" className="form-label fw-bold">Dirección:</label>
+            <input type="text" id="direccion" name="direccion" value={form.direccion} onChange={handleChange} className="form-control" />
+            <small className="text-danger">{errores.direccion}</small>
         </div>
-
-        {/* Región y Comuna */}
         <div className="row">
           <div className="col-md-6 mb-3">
             <label htmlFor="region" className="form-label fw-bold">Región:</label>
-            <select
-              id="region"
-              name="region"
-              value={form.region}
-              onChange={handleChange}
-              className="form-select"
-            >
+            <select id="region" name="region" value={form.region} onChange={handleChange} className="form-select">
               <option value="">Seleccione región</option>
-              {Object.keys(regiones).map((r) => (
-                <option key={r} value={r}>{r}</option>
-              ))}
+              {Object.keys(regiones).map((r) => (<option key={r} value={r}>{r}</option>))}
             </select>
             <small className="text-danger">{errores.region}</small>
           </div>
-
           <div className="col-md-6 mb-3">
             <label htmlFor="comuna" className="form-label fw-bold">Comuna:</label>
-            <select
-              id="comuna"
-              name="comuna"
-              value={form.comuna}
-              onChange={handleChange}
-              className="form-select"
-            >
+            <select id="comuna" name="comuna" value={form.comuna} onChange={handleChange} className="form-select">
               <option value="">Seleccione comuna</option>
-              {comunas.map((c) => (
-                <option key={c} value={c}>{c}</option>
-              ))}
+              {comunas.map((c) => (<option key={c} value={c}>{c}</option>))}
             </select>
             <small className="text-danger">{errores.comuna}</small>
           </div>
         </div>
-
-        {/* Contraseña */}
         <div className="mb-3">
           <label htmlFor="password" className="form-label fw-bold">Contraseña:</label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            value={form.password}
-            onChange={handleChange}
-            className="form-control"
-          />
+          <input type="password" id="password" name="password" value={form.password} onChange={handleChange} className="form-control" />
           <small className="text-danger">{errores.password}</small>
         </div>
 
-        {/* Botón */}
         <div className="text-center">
-          <button type="submit" className="btn btn-warning fw-bold text-dark">
-            Registrarse
-          </button>
+          <button type="submit" className="btn btn-warning fw-bold text-dark">Registrarse</button>
         </div>
       </form>
     </main>

@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom"; // <--- Usamos Link y useNavigate
 import "../assets/styles/header.css";
 
 export default function Navbar() {
   const [usuario, setUsuario] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const cargarUsuario = () => {
@@ -10,13 +12,12 @@ export default function Navbar() {
       setUsuario(usuarioGuardado || null);
     };
 
-    cargarUsuario(); // carga inicial
+    cargarUsuario();
+    // Escuchamos el evento personalizado que creamos en el Login
     window.addEventListener("usuarioActualizado", cargarUsuario);
-    window.addEventListener("storage", cargarUsuario);
-
+    
     return () => {
       window.removeEventListener("usuarioActualizado", cargarUsuario);
-      window.removeEventListener("storage", cargarUsuario);
     };
   }, []);
 
@@ -24,23 +25,30 @@ export default function Navbar() {
     localStorage.removeItem("usuarioLogueado");
     localStorage.removeItem("carrito");
     setUsuario(null);
-    window.location.href = "/";
+    navigate("/"); // Usamos navigate en lugar de window.location para no recargar
   };
 
-  // ✅ Botón que se muestra solo a Admin o Vendedor
+  // ✅ Lógica corregida: Normalizamos a minúsculas para comparar
   const renderBotonAdmin = () => {
-    if (!usuario) return null;
-    if (usuario.tipo === "Administrador") {
+    if (!usuario || !usuario.tipo) return null;
+
+    const rol = usuario.tipo.toLowerCase(); // Convertimos a minúscula (Admin -> admin)
+
+    // Aceptamos "administrador" (hardcode) y "admin" (base de datos)
+    if (rol === "administrador" || rol === "admin") {
       return (
-        <a href="/admin" className="btn btn-outline-light fw-bold">
+        <Link to="/admin" className="btn btn-outline-light fw-bold">
           Panel de Administración
-        </a>
+        </Link>
       );
-    } else if (usuario.tipo === "Vendedor") {
+    } 
+    
+    // Aceptamos "vendedor"
+    if (rol === "vendedor") {
       return (
-        <a href="/admin/productos" className="btn btn-outline-light fw-bold">
+        <Link to="/admin/productos" className="btn btn-outline-light fw-bold">
           Panel de Vendedor
-        </a>
+        </Link>
       );
     }
     return null;
@@ -53,39 +61,39 @@ export default function Navbar() {
           {/* Título */}
           <div className="navbar-title">CoffeeShop</div>
 
-          {/* Enlaces principales */}
+          {/* Enlaces principales (Usando Link para no recargar página) */}
           <div className="navbar-links d-none d-lg-flex gap-3">
-            <a href="/">Inicio</a>
-            <a href="/productos">Productos</a>
-            <a href="/contacto">Contacto</a>
-            <a href="/blogs">Blogs</a>
-            <a href="/nosotros">Nosotros</a>
-            <a href="/carrito">🛒 Carrito</a>
+            <Link to="/">Inicio</Link>
+            <Link to="/productos">Productos</Link>
+            <Link to="/contacto">Contacto</Link>
+            <Link to="/blogs">Blogs</Link>
+            <Link to="/nosotros">Nosotros</Link>
+            <Link to="/carrito">🛒 Carrito</Link>
           </div>
 
-          {/* Zona derecha */}
+          {/* Zona derecha (Usuario) */}
           <div className="navbar-auth d-flex gap-3 align-items-center">
             {usuario ? (
               <>
                 {renderBotonAdmin()}
                 <span style={{ color: "#fff", fontWeight: "bold" }}>
-                  Bienvenido, {usuario.nombre}
+                  Hola, {usuario.nombre}
                 </span>
                 <button
                   onClick={handleLogout}
                   className="btn btn-warning fw-bold text-dark"
                 >
-                  Cerrar sesión
+                  Salir
                 </button>
               </>
             ) : (
               <>
-                <a href="/registro" className="btn btn-warning fw-bold text-dark">
+                <Link to="/registro" className="btn btn-warning fw-bold text-dark">
                   Registro
-                </a>
-                <a href="/login" className="btn btn-warning fw-bold text-dark">
+                </Link>
+                <Link to="/login" className="btn btn-warning fw-bold text-dark">
                   Login
-                </a>
+                </Link>
               </>
             )}
           </div>
