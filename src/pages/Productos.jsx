@@ -9,14 +9,16 @@ export default function Productos() {
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState(null);
   const [loading, setLoading] = useState(true); // Estado para mostrar "Cargando..."
 
+  const API_URL = import.meta.env.VITE_BACKEND_URL;
+
   useEffect(() => {
     const cargarDatos = async () => {
       try {
         setLoading(true);
         // Hacemos las dos peticiones al backend simultáneamente
         const [resProductos, resCategorias] = await Promise.all([
-          axios.get("http://localhost:3001/api/products"),
-          axios.get("http://localhost:3001/api/categories"),
+          axios.get(API_URL + "/api/products"),
+          axios.get(API_URL + "/api/categories"),
         ]);
 
         setProductos(resProductos.data);

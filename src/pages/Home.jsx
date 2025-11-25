@@ -7,11 +7,13 @@ export default function Home() {
   const [productosDestacados, setProductosDestacados] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const API_URL = import.meta.env.VITE_BACKEND_URL;
+
   useEffect(() => {
     const cargarProductos = async () => {
       try {
         // 1. Pedimos los productos al Backend
-        const respuesta = await axios.get("http://localhost:3001/api/products");
+        const respuesta = await axios.get(API_URL + "/api/products");
         const todosLosProductos = respuesta.data;
 
         if (todosLosProductos.length > 0) {

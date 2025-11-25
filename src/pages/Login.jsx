@@ -6,6 +6,8 @@ import "../assets/styles/registro.css";
 export default function Login() {
   const navigate = useNavigate();
 
+  const API_URL = import.meta.env.VITE_BACKEND_URL;
+
   // 1. TUS USUARIOS FIJOS (HARDCODED) - Siempre funcionarán
   const usuariosBase = [
     {
@@ -60,7 +62,7 @@ export default function Login() {
       // ---------------------------------------------------------
       // INTENTO 1: LOGIN REAL (Backend con Token)
       // ---------------------------------------------------------
-      const respuesta = await axios.post("http://localhost:3001/api/users/login", {
+      const respuesta = await axios.post(API_URL + "/api/users/login", {
         correo: form.correo,
         password: form.password
       });

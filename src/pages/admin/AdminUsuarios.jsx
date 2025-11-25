@@ -10,6 +10,8 @@ export default function AdminUsuarios() {
   const [modoEdicion, setModoEdicion] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  const API_URL = import.meta.env.VITE_BACKEND_URL;
+
   // Estado del formulario
   const [usuarioActual, setUsuarioActual] = useState({
     id: null, // Necesitamos el ID para editar en BD
@@ -25,7 +27,7 @@ export default function AdminUsuarios() {
   const cargarUsuarios = async () => {
     try {
       setLoading(true);
-      const response = await axios.get("http://localhost:3001/api/users");
+      const response = await axios.get(API_URL + "/api/users");
       setUsuarios(response.data);
     } catch (error) {
       console.error(error);
@@ -73,7 +75,7 @@ export default function AdminUsuarios() {
   const eliminarUsuario = async (id) => {
     if (confirm("¿Eliminar este usuario de la base de datos?")) {
       try {
-        await axios.delete(`http://localhost:3001/api/users/${id}`);
+        await axios.delete(`${API_URL}/api/users/${id}`);
         cargarUsuarios();
         alert("Usuario eliminado");
       } catch (error) {
@@ -90,18 +92,18 @@ export default function AdminUsuarios() {
       if (modoEdicion) {
         // ACTUALIZAR
         // Usamos el endpoint normal para datos básicos
-        await axios.put(`http://localhost:3001/api/users/${usuarioActual.id}`, usuarioActual);
+        await axios.put(`${API_URL}/api/users/${usuarioActual.id}`, usuarioActual);
         
         // TRUCO: Si cambiaste el rol, necesitamos llamar al endpoint especial que creamos ayer
         // (Si decidiste usar la "Opción 1" de desarrollo donde updateUser acepta 'tipo', esto ya funciona solo.
         // Si usaste la "Opción 2" segura, descomenta la siguiente línea):
         
-        await axios.put(`http://localhost:3001/api/users/${usuarioActual.id}/role`, { tipo: usuarioActual.tipo });
+        await axios.put(`${API_URL}/api/users/${usuarioActual.id}/role`, { tipo: usuarioActual.tipo });
 
         alert("Usuario actualizado");
       } else {
         // CREAR
-        await axios.post("http://localhost:3001/api/users", usuarioActual);
+        await axios.post(API_URL + "/api/users", usuarioActual);
         alert("Usuario creado");
       }
       setModalAbierto(false);

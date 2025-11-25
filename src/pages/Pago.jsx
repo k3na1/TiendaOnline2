@@ -11,6 +11,8 @@ export default function Pago() {
   const [usuario, setUsuario] = useState(null);
   const [procesando, setProcesando] = useState(false); // Para deshabilitar botón mientras carga
 
+  const API_URL = import.meta.env.VITE_BACKEND_URL;
+
   const [form, setForm] = useState({
     calle: "",
     numero: "",
@@ -64,7 +66,7 @@ export default function Pago() {
         cantidad: item.cantidad
       }));
 
-      await axios.post("http://localhost:3001/api/products/reduce-stock", {
+      await axios.post(API_URL + "/api/products/reduce-stock", {
         items: itemsParaBackend
       });
 

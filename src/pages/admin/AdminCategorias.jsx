@@ -8,11 +8,13 @@ export default function AdminCategorias() {
   const [editando, setEditando] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const API_URL = import.meta.env.VITE_BACKEND_URL;
+  
   // 2. Cargar categorías desde la BD
   const cargarCategorias = async () => {
     try {
       setLoading(true);
-      const response = await axios.get("http://localhost:3001/api/categories");
+      const response = await axios.get(API_URL + "/api/categories");
       setCategorias(response.data);
     } catch (error) {
       console.error("Error al cargar categorías:", error);
@@ -35,7 +37,7 @@ export default function AdminCategorias() {
 
     try {
       // Enviamos el nombre al backend
-      await axios.post("http://localhost:3001/api/categories", {
+      await axios.post(API_URL + "/api/categories", {
         nombre: nombre.trim(),
       });
       
@@ -66,7 +68,7 @@ export default function AdminCategorias() {
     if (!nombre.trim()) return;
 
     try {
-      await axios.put(`http://localhost:3001/api/categories/${editando.id}`, {
+      await axios.put(`${API_URL}/api/categories/${editando.id}`, {
         nombre: nombre.trim(),
       });
 
@@ -87,7 +89,7 @@ export default function AdminCategorias() {
     if (!window.confirm("¿Seguro que deseas eliminar esta categoría? Los productos que pertenezcan a ella quedarán 'Sin Categoría'.")) return;
 
     try {
-      await axios.delete(`http://localhost:3001/api/categories/${id}`);
+      await axios.delete(`${API_URL}/api/categories/${id}`);
       cargarCategorias(); // Recargar lista
     } catch (error) {
       console.error(error);

@@ -18,6 +18,8 @@ export default function Registro() {
   const [errores, setErrores] = useState({});
   const [comunas, setComunas] = useState([]);
 
+  const API_URL = import.meta.env.VITE_BACKEND_URL;
+
   const regiones = {
     Metropolitana: ["Santiago", "Puente Alto", "Maipú"],
     Valparaíso: ["Valparaíso", "Viña del Mar", "Quilpué"],
@@ -71,7 +73,7 @@ export default function Registro() {
     try {
       // Enviamos los datos al Backend
       // Nota: El backend forzará "tipo: cliente" automáticamente
-      await axios.post("http://localhost:3001/api/users", {
+      await axios.post(API_URL + "/api/users", {
         run: parseInt(form.run.slice(0, -1)), // Convertimos RUN a número para la BD (sacamos el dígito verificador si tu BD es INT)
         // Si tu BD recibe STRING en el RUN, usa: run: form.run
         nombre: form.nombre,

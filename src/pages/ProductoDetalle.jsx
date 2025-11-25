@@ -11,12 +11,14 @@ export default function ProductoDetalle() {
   const [errorStock, setErrorStock] = useState("");
   const [loading, setLoading] = useState(true);
 
+  const API_URL = import.meta.env.VITE_BACKEND_URL;
+
   useEffect(() => {
     const fetchProducto = async () => {
       try {
         setLoading(true);
         // Pedimos SOLO el producto específico al backend por su ID
-        const response = await axios.get(`http://localhost:3001/api/products/${id}`);
+        const response = await axios.get(`${API_URL}/api/products/${id}`);
         setProducto(response.data);
       } catch (error) {
         console.error("Error buscando producto:", error);

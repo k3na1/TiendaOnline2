@@ -11,6 +11,8 @@ export default function AdminProductos() {
   const [mostrarCriticos, setMostrarCriticos] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  const API_URL = import.meta.env.VITE_BACKEND_URL;
+
   // Estado del formulario
   const [productoActual, setProductoActual] = useState({
     id: "",
@@ -27,8 +29,8 @@ export default function AdminProductos() {
     try {
       setLoading(true);
       const [resProductos, resCategorias] = await Promise.all([
-        axios.get("http://localhost:3001/api/products"),
-        axios.get("http://localhost:3001/api/categories"),
+        axios.get(API_URL + "/api/products"),
+        axios.get(API_URL + "/api/categories"),
       ]);
       setProductos(resProductos.data);
       setCategorias(resCategorias.data);
@@ -78,7 +80,7 @@ export default function AdminProductos() {
   const eliminarProducto = async (id) => {
     if (confirm("¿Estás seguro de eliminar este producto de la base de datos?")) {
       try {
-        await axios.delete(`http://localhost:3001/api/products/${id}`);
+        await axios.delete(`${API_URL}/api/products/${id}`);
         // Recargamos la lista visualmente
         cargarDatos();
         alert("Producto eliminado correctamente");
@@ -106,11 +108,11 @@ export default function AdminProductos() {
 
       if (modoEdicion) {
         // ACTUALIZAR (PUT)
-        await axios.put(`http://localhost:3001/api/products/${productoActual.id}`, datosAEnviar);
+        await axios.put(`${API_URL}/api/products/${productoActual.id}`, datosAEnviar);
         alert("Producto actualizado exitosamente");
       } else {
         // CREAR (POST)
-        await axios.post("http://localhost:3001/api/products", datosAEnviar);
+        await axios.post(`${API_URL}/api/products`, datosAEnviar);
         alert("Producto creado exitosamente");
       }
 
